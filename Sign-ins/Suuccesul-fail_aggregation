@@ -1,0 +1,8 @@
+// Sign-in logs aggregated by successful and failed sign-ins, based on IPAddress, Location, UserAgent, Web App used etc.
+let UPN = "user1@domain.com";
+let TimeFrame = ago(60d); 
+SigninLogs 
+| where TimeGenerated > TimeFrame
+| where UserPrincipalName =~ UPN
+| summarize FirstSeen = min(TimeGenerated), LastObserved = max(TimeGenerated), SuccessfullCount = count(ResultType = 0), FailureCount = count(ResultType != 0) 
+by UserPrincipalName, IPAddress, Location, tostring(LocationDetails), tostring(DeviceDetail.deviceId), UserAgent, ClientAppUsed, AppDisplayName
